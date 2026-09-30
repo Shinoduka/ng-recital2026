@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { performances, type Performance } from "./performances";
+import { texts } from "./texts";
 import "./App.css";
 
 const INITIAL = {
@@ -829,8 +830,8 @@ export default function App() {
       />
 
       <header className="site-header">
-        <span>NEXT GROOOVE</span>
-        <span>11TH ANNIVERSARY</span>
+        <span>{texts.date}</span>
+        <span>{texts.years}</span>
       </header>
 
       <div
@@ -845,12 +846,12 @@ export default function App() {
         }`}
       >
         <span className="eyebrow">
-          THE JOURNEY CONTINUES
+          
         </span>
 
-        <h1>BEYOND THE LINES.</h1>
+        <h1>{texts.title}</h1>
 
-        <p>この先へ、どこまでも。</p>
+        <p>{texts.subtitle}</p>
       </div>
 
       <svg
