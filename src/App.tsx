@@ -30,6 +30,7 @@ export default function App() {
   const [showCards, setShowCards] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const tappedCardRect = useRef<DOMRect | null>(null);
+  const identityIconRef = useRef<HTMLSpanElement>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -72,18 +73,65 @@ export default function App() {
       gsap.set(".detail-body", { opacity: 0, y: 30 });
       gsap.set(".cross-glow", { opacity: 0, scale: 0 });
 
+      // Foreground mark moves to the LP's upper-left identity, NOT the close button.
+      const stageBounds = stage.getBoundingClientRect();
+      const iconBounds = identityIconRef.current?.getBoundingClientRect();
+      const width = stageBounds.width;
+      const height = stageBounds.height;
+      const cx = iconBounds ? iconBounds.left - stageBounds.left + iconBounds.width / 2 : width * .08;
+      const cy = iconBounds ? iconBounds.top - stageBounds.top + iconBounds.height / 2 : 85;
+      const half = iconBounds ? iconBounds.width * .27 : 9;
+      const large = Math.min(width * .31, height * .27, 210);
+      const bigA = official
+        ? { x1: width / 2 - large, y1: height / 2 - large, x2: width / 2 + large, y2: height / 2 + large }
+        : { x1: width / 2 - large * .55, y1: height / 2 + large, x2: width / 2 - large * .15, y2: height / 2 - large };
+      const bigB = official
+        ? { x1: width / 2 + large, y1: height / 2 - large, x2: width / 2 - large, y2: height / 2 + large }
+        : { x1: width / 2 + large * .15, y1: height / 2 + large, x2: width / 2 + large * .55, y2: height / 2 - large };
+      const smallA = official
+        ? { x1: cx - half, y1: cy - half, x2: cx + half, y2: cy + half }
+        : { x1: cx - half * .45, y1: cy - half, x2: cx - half * 1.25, y2: cy + half };
+      const smallB = official
+        ? { x1: cx + half, y1: cy - half, x2: cx - half, y2: cy + half }
+        : { x1: cx + half * 1.25, y1: cy - half, x2: cx + half * .45, y2: cy + half };
+      // Read the *visible* road line endpoints in screen pixels. The foreground
+      // lines start at exactly those coordinates, so the road itself appears
+      // to bend into X or // instead of being replaced by an unrelated symbol.
+      const roadSvg = stage.querySelector<SVGSVGElement>(".motion-svg");
+      const roadLines = [stage.querySelector<SVGLineElement>(".road-left"), stage.querySelector<SVGLineElement>(".road-right")];
+      const roadToStage = (line: SVGLineElement | null) => {
+        const matrix = roadSvg?.getScreenCTM();
+        if (!line || !matrix || !roadSvg) return null;
+        const point = roadSvg.createSVGPoint();
+        point.x = Number(line.getAttribute("x1")); point.y = Number(line.getAttribute("y1"));
+        const a = point.matrixTransform(matrix);
+        point.x = Number(line.getAttribute("x2")); point.y = Number(line.getAttribute("y2"));
+        const b = point.matrixTransform(matrix);
+        return { x1: a.x - stageBounds.left, y1: a.y - stageBounds.top,
+                 x2: b.x - stageBounds.left, y2: b.y - stageBounds.top };
+      };
+      const startA = roadToStage(roadLines[0]) ?? bigA;
+      const startB = roadToStage(roadLines[1]) ?? bigB;
+      gsap.set(".foreground-cross", { opacity: 0 });
+      gsap.set(".foreground-cross-a", { attr: startA });
+      gsap.set(".foreground-cross-b", { attr: startB });
+      gsap.set(".number-identity", { opacity: 0 });
+
+      // Same pair of lines: road (ハ) → large X or // → upper-left identity.
+      // The hand-off is simultaneous, with no disappearing/reappearing mark.
+      tl.set(".foreground-cross", { opacity: 1 }, "cross")
+        .set([".road-left", ".road-right"], { opacity: 0 }, "cross")
+        .to(".foreground-cross-a", { attr: bigA, duration: .70, ease: "power3.inOut" }, "cross")
+        .to(".foreground-cross-b", { attr: bigB, duration: .70, ease: "power3.inOut" }, "cross")
+        .to(".horizon", { opacity: 0, duration: .42 }, "cross");
       if (official) {
-        tl.to(".road-left", { attr: CROSS.left, duration: 0.85, ease: "power3.inOut" }, "cross")
-          .to(".road-right", { attr: CROSS.right, duration: 0.85, ease: "power3.inOut" }, "cross")
-          .to(".horizon", { opacity: 0, duration: 0.5 }, "cross")
-          .to(".cross-glow", { opacity: 1, scale: 1, duration: 0.15 }, "cross+=0.72")
-          .to(".cross-glow", { opacity: 0, scale: 3, duration: 0.45 });
-      } else {
-        // 有志は交差せず、道の線が左右へ開く
-        tl.to(".road-left", { attr: { x2: -100 }, duration: 0.8, ease: "power3.inOut" }, "cross")
-          .to(".road-right", { attr: { x2: 420 }, duration: 0.8, ease: "power3.inOut" }, "cross")
-          .to(".horizon", { opacity: 0, duration: 0.5 }, "cross");
+        tl.to(".cross-glow", { opacity: .8, scale: 1, duration: .12 }, "cross+=.57")
+          .to(".cross-glow", { opacity: 0, scale: 2.4, duration: .36 }, "cross+=.69");
       }
+      tl.to(".foreground-cross-a", { attr: smallA, duration: .48, ease: "power3.inOut" }, "cross+=.70")
+        .to(".foreground-cross-b", { attr: smallB, duration: .48, ease: "power3.inOut" }, "cross+=.70")
+        .to(".number-identity", { opacity: 1, duration: .12 }, "cross+=1.12")
+        .to(".foreground-cross", { opacity: 0, duration: .12 }, "cross+=1.12");
       tl.to(".detail-overlay", {
         clipPath: "inset(0px 0px 0px 0px round 0px)",
         duration: 1.0,
@@ -320,10 +368,27 @@ export default function App() {
         </div>}
       </>}
 
+      {selected && (
+        <svg className="foreground-cross" width="100%" height="100%" aria-hidden="true">
+          <line className="foreground-cross-a" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          <line className="foreground-cross-b" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      )}
+
       {selected && <div className={`detail-overlay ${expanded ? "detail-overlay--open" : ""}`} role="dialog" aria-modal="true" aria-label={`${selected.title} の詳細`}>
         <div className="detail-backdrop" style={{ "--accent": selected.accent } as React.CSSProperties} />
         <section className="detail-panel">
-          <button type="button" className="close-button" onClick={closeDetail} disabled={transitioning} aria-label="詳細を閉じる">× <span>CLOSE</span></button>
+          <div className="number-identity" aria-label={selected.type === "official" ? "公式ナンバー" : "有志ナンバー"}>
+            <span ref={identityIconRef} className="identity-icon" aria-hidden="true">
+              {selected.type === "official" ? (
+                <svg viewBox="0 0 32 32"><path d="M5 5 27 27 M27 5 5 27" /></svg>
+              ) : (
+                <svg viewBox="0 0 32 32"><path d="M13 5 4 27 M28 5 19 27" /></svg>
+              )}
+            </span>
+            <span className="identity-label">{selected.type === "official" ? "OFFICIAL" : "VOLUNTARY"}</span>
+          </div>
+          <button type="button" className="close-button" onClick={closeDetail} disabled={transitioning} aria-label="詳細を閉じる"><span>CLOSE</span></button>
           <div className="detail-hero" style={{ "--accent": selected.accent } as React.CSSProperties}>
             {selected.cover && <img src={selected.cover} alt="" className="detail-cover" />}
             <div className="detail-hero-content"><span className="detail-kicker">{selected.id} / {selected.type === "official" ? "OFFICIAL NUMBER" : "VOLUNTARY NUMBER"}</span><h2>{selected.title}</h2><p>{selected.genre}</p></div>
