@@ -9,8 +9,8 @@ button { font: inherit; }
 .road-title--small { transform: translateY(-5vh) scale(.77); }
 .road-title--hidden { opacity: 0; }
 .eyebrow { font-size: 10px; letter-spacing: .32em; color: #aab8cf; }
-.road-title h1 { font-size: clamp(25px, 5vw, 65px); letter-spacing: -.045em; margin: 14px 0; }
-.road-title p { font-size: 12px; letter-spacing: .2em; color: #c6d1e0; }
+.road-title h1 { font-size: clamp(45px, 10vw, 85px); letter-spacing: -.045em; margin: 14px 0; }
+.road-title p { font-size: 18px; letter-spacing: .2em; color: #c6d1e0; }
 .motion-svg { position: absolute; width: min(94vw, 1050px); height: auto; top: 54%; left: 50%; transform: translate(-50%, -50%); overflow: visible; pointer-events: none; }
 .start-controls { position: absolute; z-index: 5; bottom: 7%; left: 0; right: 0; display: flex; justify-content: center; padding: 0 20px; }
 .start-controls button { min-height: 50px; padding: 12px 25px; color: #fff; border: 1px solid #ffffff80; background: #080d18dd; border-radius: 999px; cursor: pointer; letter-spacing: .13em; font-size: 11px; }
