@@ -38,7 +38,7 @@ button { font: inherit; }
 .close-button { position: fixed; top: 65px; right: 5%; z-index: 16; display: flex; align-items: center; gap: 10px; border: 1px solid #ffffff66; background: #0c1320dd; color: #fff; padding: 9px 14px; border-radius: 30px; cursor: pointer; font-size: 22px; }
 .close-button span { font-size: 9px; letter-spacing: .16em; }
 .detail-hero { position: relative; display: flex; align-items: end; min-height: min(65svh, 570px); padding: 110px max(7%, calc((100vw - 1000px)/2)) 55px; background: radial-gradient(ellipse at 75% 30%, color-mix(in srgb, var(--accent), transparent 77%), transparent 58%), linear-gradient(#17253b, #0c1320); overflow: hidden; }
-.detail-hero::after { content: "×"; position: absolute; right: 5%; top: 17%; font-size: clamp(180px, 38vw, 500px); font-weight: 100; line-height: 1; opacity: .055; pointer-events: none; }
+.detail-hero::after { content: "11"; position: absolute; right: 5%; top: 17%; font-size: clamp(180px, 38vw, 500px); font-weight: 100; line-height: 1; opacity: .055; pointer-events: none; }
 .detail-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .3; }
 .detail-hero-content { position: relative; z-index: 1; }
 .detail-kicker { color: var(--accent); font-size: 11px; letter-spacing: .24em; }
@@ -89,3 +89,57 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 
 /* The LP must receive events while its opening animation runs. */
 .detail-overlay { isolation: isolate; }
+
+/* X is an independent foreground layer; it is never clipped by the LP. */
+.foreground-cross { position: absolute; inset: 0; z-index: 21; pointer-events: none; overflow: visible; opacity: 0; filter: drop-shadow(0 0 9px #ffffff66); }
+.close-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; flex: 0 0 24px; font-size: 24px; line-height: 1; }
+/* Keep the close button above the moving lines and clickable. */
+.close-button { z-index: 23; }
+
+/* v0.9: separate identity mark in the upper-left and close action in the upper-right. */
+.number-identity {
+  position: fixed;
+  top: 65px;
+  left: 5%;
+  z-index: 23;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  color: #fff;
+}
+.identity-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff66;
+  border-radius: 10px;
+  background: #0c1320dd;
+}
+.identity-icon svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.identity-label { font-size: 10px; letter-spacing: .18em; }
+.close-icon { font-size: 23px !important; font-weight: 300; }
+@media (max-width: 600px) {
+  .number-identity { top: 24px; left: 5%; gap: 7px; }
+  .close-button { top: 24px; right: 5%; }
+  .identity-label { font-size: 8px; letter-spacing: .1em; }
+}
+
+/* v1.2: Reserve a dedicated second header row for the identity and CLOSE.
+   The animated lines target .identity-icon via its measured bounding box,
+   so moving the icon also moves the morph animation's destination. */
+.site-header { top: calc(22px + env(safe-area-inset-top, 0px)); }
+.number-identity { top: calc(72px + env(safe-area-inset-top, 0px)); }
+.close-button { top: calc(72px + env(safe-area-inset-top, 0px)); }
+.detail-hero { padding-top: calc(150px + env(safe-area-inset-top, 0px)); }
+@media (max-width: 600px) {
+  .site-header { top: calc(22px + env(safe-area-inset-top, 0px)); }
+  .number-identity { top: calc(70px + env(safe-area-inset-top, 0px)); left: 5%; }
+  .close-button { top: calc(70px + env(safe-area-inset-top, 0px)); right: 5%; }
+  .detail-hero { padding-top: calc(154px + env(safe-area-inset-top, 0px)); }
+}
+
+/* v1.2.1: CLOSE is text-only; retain its click target and position. */
+.close-button { gap: 0; }
