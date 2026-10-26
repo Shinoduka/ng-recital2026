@@ -11,6 +11,7 @@ export type Performance = {
   accent: Accent;
   members: Member[];
   cover?: string;
+  coverPosition?: string;
 };
 
 export const performances: Performance[] = [
