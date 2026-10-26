@@ -127,19 +127,9 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
   .identity-label { font-size: 8px; letter-spacing: .1em; }
 }
 
-/* v1.2: Reserve a dedicated second header row for the identity and CLOSE.
-   The animated lines target .identity-icon via its measured bounding box,
-   so moving the icon also moves the morph animation's destination. */
-.site-header { top: calc(22px + env(safe-area-inset-top, 0px)); }
-.number-identity { top: calc(72px + env(safe-area-inset-top, 0px)); }
-.close-button { top: calc(72px + env(safe-area-inset-top, 0px)); }
-.detail-hero { padding-top: calc(150px + env(safe-area-inset-top, 0px)); }
-@media (max-width: 600px) {
-  .site-header { top: calc(22px + env(safe-area-inset-top, 0px)); }
-  .number-identity { top: calc(70px + env(safe-area-inset-top, 0px)); left: 5%; }
-  .close-button { top: calc(70px + env(safe-area-inset-top, 0px)); right: 5%; }
-  .detail-hero { padding-top: calc(154px + env(safe-area-inset-top, 0px)); }
-}
-
-/* v1.2.1: CLOSE is text-only; retain its click target and position. */
-.close-button { gap: 0; }
+/* Photo on the right, seamlessly blended into the existing dark card. */
+.number-card .card-photo { position:absolute; inset:0 0 0 auto; width:72%; z-index:0; background-size:cover; background-repeat:no-repeat; background-position:center; pointer-events:none; }
+.number-card .card-photo::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg, #101827 0%, rgba(16,24,39,.94) 18%, rgba(16,24,39,.48) 53%, rgba(16,24,39,.12) 100%), linear-gradient(0deg, rgba(10,16,27,.65), transparent 45%); }
+.number-card .card-shine, .number-card .card-meta, .number-card .card-main, .number-card .card-bottom { z-index:1; }
+.number-card .card-main { max-width: 82%; text-shadow: 0 2px 14px #000b; }
+.number-card .card-main strong { overflow-wrap:anywhere; }

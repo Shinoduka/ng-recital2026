@@ -1137,7 +1137,8 @@ export default function App() {
                       }
                     }}
                   >
-                    <span className="card-shine" />
+                    <span className="card-photo" aria-hidden="true" style={p.cover ? { backgroundImage: `url(${p.cover})`, backgroundPosition: p.coverPosition ?? "center" } : undefined} />
+                     <span className="card-shine" />
 
                     <span className="card-meta">
                       <span>

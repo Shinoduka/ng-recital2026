@@ -161,6 +161,7 @@ export const performances: Performance[] = [
       "A116",
       "A135"
     ),
+    cover: "/covers/sample.jpg"
   },
   {
     id: "M07",
