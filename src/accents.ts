@@ -1,6 +1,6 @@
 /** accent はこの8色から選択します。順序は 白・黄色・緑・赤・紫・ピンク・青・オレンジ。 */
 export const accents = [
-  { name: "white", label: "白", hex: "#FFFFFF", genre: "ALL" },
+  { name: "white", label: "白", hex: "#C4C8CE", genre: "ALL" },
   { name: "yellow", label: "黄色", hex: "#FFD84D", genre: "HIPHOP"},
   { name: "green", label: "緑", hex: "#57D98D", genre: "POP" },
   { name: "red", label: "赤", hex: "#FF6670", genre: "" },
