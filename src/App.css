@@ -127,10 +127,30 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
   .identity-label { font-size: 8px; letter-spacing: .1em; }
 }
 
-/* Photo blends into a dark tone derived from each performance accent. */
-.number-card { --card-tone: color-mix(in srgb, var(--accent) 24%, #0b1321); }
-.number-card .card-photo { position:absolute; inset:0 0 0 auto; width:72%; z-index:0; background-size:cover; background-repeat:no-repeat; background-position:center; pointer-events:none; }
-.number-card .card-photo::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg, var(--card-tone) 0%, color-mix(in srgb, var(--card-tone) 92%, transparent) 20%, color-mix(in srgb, var(--card-tone) 45%, transparent) 58%, transparent 100%), linear-gradient(0deg, rgba(7,12,22,.68), transparent 48%); }
-.number-card .card-shine, .number-card .card-meta, .number-card .card-main, .number-card .card-bottom { z-index:1; }
-.number-card .card-main { max-width: 82%; text-shadow: 0 2px 14px #000b; }
-.number-card .card-main strong { overflow-wrap:anywhere; }
+/* Seamless color blending: fade the photo itself into the exact card background.
+   No black overlay at the boundary, even for bright accent colors. */
+   .number-card {
+    --card-tone: color-mix(in srgb, var(--accent) 24%, #0b1321);
+    background: var(--card-tone);
+  }
+  .number-card .card-photo {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 76%;
+    z-index: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.12) 12%, rgba(0,0,0,.55) 39%, #000 76%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.12) 12%, rgba(0,0,0,.55) 39%, #000 76%);
+  }
+  /* Remove the old dark pseudo-overlay; it caused the black seam. */
+  .number-card .card-photo::after { content: none; }
+  .number-card .card-shine,
+  .number-card .card-meta,
+  .number-card .card-main,
+  .number-card .card-bottom { position: relative; z-index: 1; }
+  .number-card .card-main { max-width: 82%; text-shadow: 0 2px 14px #000b; }
+  .number-card .card-main strong { overflow-wrap: anywhere; }
+  
